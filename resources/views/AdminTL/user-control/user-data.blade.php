@@ -527,6 +527,7 @@ User Data - User Control
                                     </div>
 
                                     @foreach($penugasanGroup as $parentId => $hierarchy)
+                                        @if(isset($hierarchy['parent']))
                                         <div class="hierarchy-group">
                                             <!-- Parent Section -->
                                             <div class="parent-section">
@@ -611,6 +612,7 @@ User Data - User Control
                                             </div>
                                             @endif
                                         </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             @endforeach
