@@ -116,6 +116,7 @@ class VerifikasiController extends Controller
      */
     public function show($type, $id)
     {
+        // Perlu di sesuaikan dengan controller editrekom yang ketika admin mengupload data dukung
         try {
             $pengawasan = Pengawasan::with([
                 'dataDukung' => function ($query) {
