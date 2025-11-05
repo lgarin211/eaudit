@@ -547,6 +547,11 @@
                     </h5>
                 </div>
                 <div class="card-body">
+                    @php
+                        // Use penugasanData from API if available, otherwise use pengawasan data
+                        $displayData = $penugasanData ?? [];
+                    @endphp
+
                     <div class="row">
                         <div class="col-md-3">
                             <label class="fw-bold text-white">Nomor Surat</label>
@@ -555,7 +560,7 @@
                             <input type="text" class="form-control" value="700.1.1" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                         <div class="col-md-3">
-                            <input type="text" class="form-control" value="{{ $pengawasan->noSurat ?? '' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                            <input type="text" class="form-control" value="{{ $displayData['noSurat'] ?? $pengawasan->noSurat ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                         <div class="col-md-3">
                             <input type="text" class="form-control" value="03/2025" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
@@ -566,7 +571,7 @@
                             <label class="fw-bold text-white">Jenis Pengawasan</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" value="{{ $pengawasan->nama_jenispengawasan ?? '' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                            <input type="text" class="form-control" value="{{ $displayData['nama_jenispengawasan'] ?? $pengawasan->nama_jenispengawasan ?? $pengawasan->jenis ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -574,7 +579,7 @@
                             <label class="fw-bold text-white">Obrik Pengawasan</label>
                         </div>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" value="{{ $pengawasan->nama_obrik ?? '' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                            <input type="text" class="form-control" value="{{ $displayData['nama_obrik'] ?? $pengawasan->nama_obrik ?? $pengawasan->wilayah ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -582,43 +587,26 @@
                             <label class="fw-bold text-white">Tanggal Pelaksanaan</label>
                         </div>
                         <div class="col-md-3">
-                            <input type="text" class="form-control" value="{{ $pengawasan->tanggalAwalPenugasan ?? '' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                            <input type="text" class="form-control" value="{{ $displayData['tanggalAwalPenugasan'] ?? $pengawasan->tanggalAwalPenugasan ?? ($pengawasan->tglkeluar ? $pengawasan->tglkeluar->format('Y-m-d') : 'N/A') }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                         <div class="col-md-3 d-flex align-items-center justify-content-center">
                             <span class="text-white">s/d</span>
                         </div>
                         <div class="col-md-3">
-                            <input type="text" class="form-control" value="{{ $pengawasan->tanggalAkhirPenugasan ?? '' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                            <input type="text" class="form-control" value="{{ $displayData['tanggalAkhirPenugasan'] ?? $pengawasan->tanggalAkhirPenugasan ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                     </div>
+
+                    @if(isset($displayData['pemeriksa']) || $pengawasan->pemeriksa)
                     <div class="row mt-3">
                         <div class="col-md-3">
-                            <label class="fw-bold text-white">Status LHP</label>
+                            <label class="fw-bold text-white">Pemeriksa</label>
                         </div>
                         <div class="col-md-9">
-                            @php
-                                $status = $pengawasan->status_LHP ?? 'Belum Jadi';
-                            @endphp
-                            <div class="input-group">
-                                <input type="text" class="form-control" value="{{ $status }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
-                                <div class="input-group-append">
-                                    <span class="input-group-text" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
-                                        @if($status == 'Belum Jadi')
-                                            <i class="fas fa-clock text-warning" title="Belum Jadi"></i>
-                                        @elseif($status == 'Di Proses')
-                                            <i class="fas fa-cogs text-info" title="Di Proses"></i>
-                                        @elseif($status == 'Diterima')
-                                            <i class="fas fa-check-circle text-success" title="Diterima"></i>
-                                        @elseif($status == 'Ditolak')
-                                            <i class="fas fa-times-circle text-danger" title="Ditolak"></i>
-                                        @else
-                                            <i class="fas fa-question-circle text-muted" title="Status Tidak Dikenal"></i>
-                                        @endif
-                                    </span>
-                                </div>
-                            </div>
+                            <input type="text" class="form-control" value="{{ $displayData['pemeriksa'] ?? $pengawasan->pemeriksa ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -637,40 +625,75 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <label class="fw-bold text-white">Tanggal Surat Keluar</label>
-                            <input type="date" class="form-control mt-2" value="{{ $pengawasan->tglkeluar ?? '' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                            <label class="fw-bold text-white">ID Pengawasan</label>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->id }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                         <div class="col-md-4">
+                            <label class="fw-bold text-white">ID Penugasan</label>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->id_penugasan ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="fw-bold text-white">Tanggal Surat Keluar</label>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->tglkeluar ? $pengawasan->tglkeluar->format('d/m/Y') : 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
                             <label class="fw-bold text-white">Tipe Rekomendasi</label>
-                            <select class="form-control mt-2" disabled style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
-                                <option value="Rekomendasi" @if ($pengawasan->tipe=='Rekomendasi')selected='selected' @endif>Rekomendasi</option>
-                                <option value="TemuandanRekomendasi" @if ($pengawasan->tipe=='TemuandanRekomendasi')selected='selected' @endif>Temuan dan Rekomendasi</option>
-                            </select>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->tipe ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                         <div class="col-md-4">
                             <label class="fw-bold text-white">Jenis Pemeriksaan</label>
-                            <select class="form-control mt-2" disabled style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
-                                <option value="pdtt" @if ($pengawasan->jenis=='pdtt')selected='selected' @endif>PDTT</option>
-                                <option value="nspk" @if ($pengawasan->jenis=='nspk')selected='selected' @endif>NSPK</option>
-                            </select>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->jenis ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="fw-bold text-white">Wilayah</label>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->wilayah ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label class="fw-bold text-white">Wilayah</label>
-                            <select class="form-control mt-2" disabled style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
-                                <option value="wilayah1" @if ($pengawasan->wilayah=='wilayah1')selected='selected' @endif>Wilayah 1</option>
-                                <option value="wilayah2" @if ($pengawasan->wilayah=='wilayah2')selected='selected' @endif>Wilayah 2</option>
-                            </select>
+                            <label class="fw-bold text-white">Pemeriksa</label>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->pemeriksa ?? 'N/A' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
                         </div>
                         <div class="col-md-6">
-                            <label class="fw-bold text-white">Pemeriksa</label>
-                            <select class="form-control mt-2" disabled style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
-                                <option value="auditor" @if ($pengawasan->pemeriksa=='auditor')selected='selected' @endif>Auditor</option>
-                                <option value="ppupd" @if ($pengawasan->pemeriksa=='ppupd')selected='selected' @endif>PPUPD</option>
-                            </select>
+                            <label class="fw-bold text-white">Status LHP</label>
+                            <div class="input-group mt-2">
+                                <input type="text" class="form-control" value="{{ $pengawasan->status_LHP ?? 'Belum Jadi' }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                                <div class="input-group-append">
+                                    <span class="input-group-text" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+                                        @php $status = $pengawasan->status_LHP ?? 'Belum Jadi'; @endphp
+                                        @if($status == 'Belum Jadi')
+                                            <i class="fas fa-clock text-warning" title="Belum Jadi"></i>
+                                        @elseif($status == 'Di Proses')
+                                            <i class="fas fa-cogs text-info" title="Di Proses"></i>
+                                        @elseif($status == 'Diterima')
+                                            <i class="fas fa-check-circle text-success" title="Diterima"></i>
+                                        @elseif($status == 'Ditolak')
+                                            <i class="fas fa-times-circle text-danger" title="Ditolak"></i>
+                                        @else
+                                            <i class="fas fa-question-circle text-muted" title="Status Tidak Dikenal"></i>
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    @if($pengawasan->tgl_verifikasi)
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label class="fw-bold text-white">Tanggal Verifikasi</label>
+                            <input type="text" class="form-control mt-2" value="{{ $pengawasan->tgl_verifikasi->format('d/m/Y H:i:s') }}" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);">
+                        </div>
+                        @if($pengawasan->alasan_verifikasi)
+                        <div class="col-md-6">
+                            <label class="fw-bold text-white">Alasan Verifikasi</label>
+                            <textarea class="form-control mt-2" readonly style="background-color: var(--bg-primary); color: var(--text-primary); border-color: var(--border-color);" rows="2">{{ $pengawasan->alasan_verifikasi }}</textarea>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -711,6 +734,86 @@
             </div>
         </div>
     </div>
+
+    <!-- Ringkasan Data -->
+    @if(isset($hierarchicalData) && $hierarchicalData->count() > 0)
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card verification-card border-0 shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0" style="color: var(--text-primary) !important;">
+                        <i class="fas fa-chart-bar"></i>
+                        Ringkasan Data Rekomendasi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @php
+                        // Calculate statistics
+                        $totalItems = 0;
+                        $totalFiles = 0;
+                        $totalPengembalian = 0;
+
+                        function calculateStats($items, &$totalItems, &$totalFiles, &$totalPengembalian) {
+                            foreach($items as $item) {
+                                $totalItems++;
+                                if(isset($item->uploadedFiles)) {
+                                    $totalFiles += $item->uploadedFiles->count();
+                                }
+                                if(isset($item->pengembalian) && is_numeric($item->pengembalian)) {
+                                    $totalPengembalian += $item->pengembalian;
+                                }
+                                if(isset($item->children) && count($item->children) > 0) {
+                                    calculateStats($item->children, $totalItems, $totalFiles, $totalPengembalian);
+                                }
+                            }
+                        }
+
+                        calculateStats($hierarchicalData, $totalItems, $totalFiles, $totalPengembalian);
+                    @endphp
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <i class="fas fa-list-ol fa-2x text-primary"></i>
+                                </div>
+                                <h4 class="text-white">{{ $totalItems }}</h4>
+                                <p class="text-muted mb-0">Total Item Rekomendasi</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <i class="fas fa-file fa-2x text-info"></i>
+                                </div>
+                                <h4 class="text-white">{{ $totalFiles }}</h4>
+                                <p class="text-muted mb-0">Total File Data Dukung</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+                                </div>
+                                <h4 class="text-white">{{ number_format($totalPengembalian, 0, ',', '.') }}</h4>
+                                <p class="text-muted mb-0">Total Pengembalian (Rp)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    <i class="fas fa-calendar fa-2x text-warning"></i>
+                                </div>
+                                <h4 class="text-white">{{ $pengawasan->created_at ? $pengawasan->created_at->format('d/m/Y') : 'N/A' }}</h4>
+                                <p class="text-muted mb-0">Tanggal Dibuat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <div class="row">
         <!-- Data Information -->
@@ -804,54 +907,72 @@
                 <div class="card-header">
                     <h5 class="mb-0" style="color: var(--text-primary) !important;">
                         <i class="fas fa-files"></i>
-                        File Data Dukung ({{ $pengawasan->dataDukung->count() }} file)
+                        Ringkasan File Data Dukung ({{ $pengawasan->dataDukung->count() }} file)
                     </h5>
                 </div>
                 <div class="card-body">
                     @if($pengawasan->dataDukung->count() > 0)
-                        @foreach($pengawasan->dataDukung as $file)
-                        <div class="file-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h6 class="mb-1" style="color: var(--text-primary) !important;">
-                                        <i class="fas fa-file-alt text-primary"></i>
-                                        {{ basename($file->nama_file) }}
-                                    </h6>
-                                    @if($file->keterangan_file)
-                                        <small style="color: var(--text-muted) !important;">{{ $file->keterangan_file }}</small>
-                                    @endif
-                                    <br>
-                                    <small style="color: var(--text-muted) !important;">
-                                        <i class="fas fa-clock"></i>
-                                        Diupload: {{ $file->created_at->format('d/m/Y H:i') }}
-                                    </small>
-                                    @if($file->id_jenis_temuan)
-                                        <br>
-                                        <small class="text-info">
-                                            <i class="fas fa-tag"></i>
-                                            ID Jenis Temuan: {{ $file->id_jenis_temuan }}
-                                        </small>
-                                    @endif
-                                </div>
-                                <div class="col-md-4 text-end">
-                                    <a href="{{ asset($file->nama_file) }}"
-                                       target="_blank"
-                                       class="btn btn-sm btn-primary">
-                                        <i class="fas fa-eye"></i> Lihat
-                                    </a>
-                                    <a href="{{ asset($file->nama_file) }}"
-                                       download
-                                       class="btn btn-sm btn-success">
-                                        <i class="fas fa-download"></i> Download
-                                    </a>
-                                </div>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm" style="color: var(--text-primary);">
+                                <thead style="background-color: var(--bg-secondary);">
+                                    <tr>
+                                        <th style="border-color: var(--border-color);">No</th>
+                                        <th style="border-color: var(--border-color);">Nama File</th>
+                                        <th style="border-color: var(--border-color);">Terkait Item</th>
+                                        <th style="border-color: var(--border-color);">Keterangan</th>
+                                        <th style="border-color: var(--border-color);">Upload</th>
+                                        <th style="border-color: var(--border-color);">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pengawasan->dataDukung as $index => $file)
+                                    <tr style="background-color: var(--bg-primary);">
+                                        <td style="border-color: var(--border-color);">{{ $index + 1 }}</td>
+                                        <td style="border-color: var(--border-color);">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-file-alt text-primary me-2"></i>
+                                                <span>{{ basename($file->nama_file) }}</span>
+                                            </div>
+                                        </td>
+                                        <td style="border-color: var(--border-color);">
+                                            @if($file->id_jenis_temuan)
+                                                @php
+                                                    $relatedItem = DB::table('jenis_temuans')->find($file->id_jenis_temuan);
+                                                @endphp
+                                                @if($relatedItem)
+                                                    <small class="badge bg-info">{{ strlen($relatedItem->rekomendasi ?? 'N/A') > 30 ? substr($relatedItem->rekomendasi ?? 'N/A', 0, 30) . '...' : ($relatedItem->rekomendasi ?? 'N/A') }}</small>
+                                                @else
+                                                    <small class="text-muted">Item terhapus</small>
+                                                @endif
+                                            @else
+                                                <small class="badge bg-secondary">Global</small>
+                                            @endif
+                                        </td>
+                                        <td style="border-color: var(--border-color);">
+                                            <small>{{ $file->keterangan_file ?? '-' }}</small>
+                                        </td>
+                                        <td style="border-color: var(--border-color);">
+                                            <small>{{ $file->created_at->format('d/m/Y H:i') }}</small>
+                                        </td>
+                                        <td style="border-color: var(--border-color);">
+                                            <div class="btn-group" role="group">
+                                                <a href="{{ asset($file->nama_file) }}" target="_blank" class="btn btn-sm btn-info" title="Lihat File">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ asset($file->nama_file) }}" download class="btn btn-sm btn-success" title="Download File">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                        @endforeach
                     @else
                         <div class="text-center py-4">
-                            <i class="fas fa-inbox" style="font-size: 2rem; color: var(--text-muted);"></i>
-                            <h6 class="mt-2" style="color: var(--text-muted) !important;">Belum ada file yang diupload</h6>
+                            <i class="fas fa-inbox fa-3x mb-3 text-white"></i>
+                            <h6 class="mt-2 text-white">Belum ada file yang diupload</h6>
                         </div>
                     @endif
                 </div>

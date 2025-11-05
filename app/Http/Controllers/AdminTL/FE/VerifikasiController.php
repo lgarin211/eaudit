@@ -9,6 +9,7 @@ use App\Models\DataDukung;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 class VerifikasiController extends Controller
 {
@@ -129,10 +130,27 @@ class VerifikasiController extends Controller
             // Build hierarchical data structure for detailed display
             $hierarchicalData = $this->buildHierarchicalDataForVerification($id);
 
+            // Get additional pengawasan data via API
+            $penugasanData = null;
+            try {
+                $token = session('ctoken');
+                if ($token) {
+                    $response = \Illuminate\Support\Facades\Http::get("http://127.0.0.1:8000/api/pengawasan-edit/{$id}", [
+                        'token' => $token
+                    ]);
+
+                    if ($response->successful()) {
+                        $penugasanData = $response->json()['data'] ?? null;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Could not fetch penugasan data: ' . $e->getMessage());
+            }
+
             $pageType = $type;
             $pageTitle = $type === 'rekomendasi' ? 'Detail Verifikasi - Rekomendasi' : 'Detail Verifikasi - Temuan dan Rekomendasi';
 
-            return view('AdminTL.verifikasi.show', compact('pengawasan', 'pageType', 'pageTitle', 'canUpdateStatus', 'hierarchicalData'));
+            return view('AdminTL.verifikasi.show', compact('pengawasan', 'pageType', 'pageTitle', 'canUpdateStatus', 'hierarchicalData', 'penugasanData'));
         } catch (\Exception $e) {
             Log::error('Error loading verification detail', [
                 'type' => $type,
