@@ -35,11 +35,8 @@ class VerifikasiController extends Controller
             ])
                 ->where(function ($query) {
                     // Filter untuk data yang terkait dengan rekomendasi
-                    $query->where('jenis', 'LIKE', '%rekomendasi%')
-                        ->orWhere('tipe', 'LIKE', '%rekomendasi%')
-                        ->orWhereHas('dataDukung', function ($q) {
-                        $q->whereNull('id_jenis_temuan');
-                    });
+                    // Only show records with tipe exactly "Rekomendasi"
+                    $query->whereRaw("LOWER(tipe) = 'rekomendasi'");
                 })
                 // Order by: Di Proses first, then others by updated_at desc
                 ->orderByRaw("CASE
@@ -80,11 +77,8 @@ class VerifikasiController extends Controller
             ])
                 ->where(function ($query) {
                     // Filter untuk data yang terkait dengan temuan dan rekomendasi
-                    $query->where('jenis', 'LIKE', '%temuan%')
-                        ->orWhere('tipe', 'LIKE', '%temuan%')
-                        ->orWhereHas('dataDukung', function ($q) {
-                        $q->whereNotNull('id_jenis_temuan');
-                    });
+                    // Only show records with tipe exactly "TemuandanRekomendasi"
+                    $query->whereRaw("LOWER(tipe) = 'temuandanrekomendasi'");
                 })
                 // Order by: Di Proses first, then others by updated_at desc
                 ->orderByRaw("CASE

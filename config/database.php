@@ -56,7 +56,18 @@ return [
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'prefix_indexes' => true,
-            'strict' => true,
+            /*
+            |--------------------------------------------------------------------------
+            | Strict mode
+            |--------------------------------------------------------------------------
+            |
+            | Some MySQL servers (especially managed/online ones) enable
+            | ONLY_FULL_GROUP_BY which breaks queries that rely on non-aggregated
+            | columns not present in GROUP BY. We make this configurable via
+            | the DB_STRICT env var so you can disable it on those servers.
+            |
+            */
+            'strict' => env('DB_STRICT', false),
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
@@ -123,7 +134,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
