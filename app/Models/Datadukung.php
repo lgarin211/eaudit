@@ -13,9 +13,11 @@ class DataDukung extends Model
 
     protected $fillable = [
         'id_pengawasan',
-        'id_jenis_temuan',
         'nama_file',
-        'keterangan_file'
+        'original_name',
+        'file_path',
+        'file_size',
+        'file_type'
     ];
 
     protected $casts = [
@@ -29,13 +31,5 @@ class DataDukung extends Model
     public function pengawasan()
     {
         return $this->belongsTo(Pengawasan::class, 'id_pengawasan');
-    }
-
-    /**
-     * Get the jenis temuan that owns the data dukung.
-     */
-    public function jenisTemuan()
-    {
-        return $this->belongsTo(\App\Models\Jenis_temuan::class, 'id_jenis_temuan');
     }
 }
