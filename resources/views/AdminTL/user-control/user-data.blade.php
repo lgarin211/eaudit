@@ -334,10 +334,10 @@ User Data - User Control
                                         <div class="card-header" id="heading{{ $penugasanId }}">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="flex-grow-1">
-                                                    <button class="btn btn-link text-left p-0 collapsed" type="button" 
-                                                            data-toggle="collapse" 
-                                                            data-target="#collapse{{ $penugasanId }}" 
-                                                            aria-expanded="false" 
+                                                    <button class="btn btn-link text-left p-0 collapsed" type="button"
+                                                            data-toggle="collapse"
+                                                            data-target="#collapse{{ $penugasanId }}"
+                                                            aria-expanded="false"
                                                             aria-controls="collapse{{ $penugasanId }}">
                                                         <h6 class="mb-0 text-primary">
                                                             <i class="fas fa-database mr-2"></i>
@@ -367,10 +367,10 @@ User Data - User Control
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                        <div id="collapse{{ $penugasanId }}" 
-                                             class="collapse" 
-                                             aria-labelledby="heading{{ $penugasanId }}" 
+
+                                        <div id="collapse{{ $penugasanId }}"
+                                             class="collapse"
+                                             aria-labelledby="heading{{ $penugasanId }}"
                                              data-parent="#pengawasanAccordion">
                                             <div class="card-body">
                                                 <div class="row">
@@ -389,7 +389,7 @@ User Data - User Control
                                                                                 {{ ucwords(strtolower($hierarchy['parent']->nama_temuan)) }}
                                                                             @endif
                                                                         </h6>
-                                                                        
+
                                                                         @if($hierarchy['parent']->kode_temuan)
                                                                             <p class="mb-2">
                                                                                 <span class="badge badge-primary">{{ $hierarchy['parent']->kode_temuan }}</span>
@@ -400,7 +400,7 @@ User Data - User Control
                                                                                 <span class="badge badge-info">Rekomendasi</span>
                                                                             </p>
                                                                         @endif
-                                                                        
+
                                                                         @if(!empty($hierarchy['children']) && is_array($hierarchy['children']))
                                                                             <div class="mt-3">
                                                                                 <h6 class="text-muted">Sub Items:</h6>
@@ -759,18 +759,18 @@ function findPengawasanForId(jenisTemuanId) {
         const hierarchyData = @json($jenisTemuansHierarchy);
         console.log('Finding pengawasan for ID:', jenisTemuanId);
         console.log('Hierarchy data:', hierarchyData);
-        
+
         for (const pengawasanId in hierarchyData) {
             const penugasanGroup = hierarchyData[pengawasanId];
             for (const parentId in penugasanGroup) {
                 const hierarchy = penugasanGroup[parentId];
-                
+
                 // Check parent
                 if (hierarchy.parent && hierarchy.parent.id == jenisTemuanId) {
                     console.log('Found in parent:', pengawasanId);
                     return pengawasanId;
                 }
-                
+
                 // Check if children exists and is an array
                 if (hierarchy.children && Array.isArray(hierarchy.children)) {
                     for (let i = 0; i < hierarchy.children.length; i++) {

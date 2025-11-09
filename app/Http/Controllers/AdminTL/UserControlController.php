@@ -229,12 +229,12 @@ class UserControlController extends Controller
                             'nama_temuan' => ''
                         ];
                     }
-                    
+
                     // Ensure children is array before adding
                     if (!is_array($jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent]['children'])) {
                         $jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent]['children'] = [];
                     }
-                    
+
                     $jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent]['children'][] = $item;
                 }
             }
