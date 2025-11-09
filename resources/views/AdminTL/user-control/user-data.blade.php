@@ -42,253 +42,76 @@ User Data - User Control
         border-radius: 0.2rem;
     }
 
-    /* Dark Theme Hierarchical Design */
-    .hierarchy-group {
-        background: #2c3e50;
-        border: 2px solid #34495e;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        overflow: hidden;
-        margin-bottom: 1.5rem;
-    }
-
-    .parent-row {
-        background: linear-gradient(135deg, #3498db, #2980b9) !important;
-        border: none;
-        position: relative;
-        color: white !important;
-        font-weight: 600;
-        padding: 1rem 1.25rem !important;
-    }
-
-    .parent-row::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
-    }
-
-    .parent-checkbox:checked + .parent-row {
-        background: linear-gradient(135deg, #27ae60, #229954) !important;
-        animation: parentSelected 0.3s ease;
-    }
-
-    .parent-checkbox:indeterminate + .parent-row {
-        background: linear-gradient(135deg, #f39c12, #e67e22) !important;
-    }
-
-    .parent-section {
-        position: relative;
-    }
-
-    @keyframes parentSelected {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.02); }
-        100% { transform: scale(1); }
-    }
-
-    .children-container {
-        background: #34495e !important;
-        border-top: 1px solid #4a5f7a;
-    }
-
-    .child-row {
-        transition: all 0.25s ease;
-        background: transparent;
-        color: #ecf0f1 !important;
-        border-bottom: 1px solid #4a5f7a;
-        padding: 0.875rem 1.25rem !important;
-    }
-
-    .child-row:last-child {
-        border-bottom: none !important;
-    }
-
-    .child-row:hover {
-        background: #3d566e !important;
-        transform: translateX(5px);
-    }
-
-    .child-checkbox:checked + label + div,
-    .child-checkbox:checked ~ div {
-        color: #2ecc71 !important;
-        font-weight: 600;
-    }
-
-    .child-row:has(.child-checkbox:checked) {
-        background: rgba(46, 204, 113, 0.15) !important;
-    }
-
-    .child-checkbox:checked + label + div .fas,
-    .child-checkbox:checked ~ div .fas {
-        color: #2ecc71 !important;
-    }
-
-    .parent-checkbox, .child-checkbox {
-        cursor: pointer;
-        width: 18px !important;
-        height: 18px !important;
-        border: 2px solid #7f8c8d !important;
-        background: #ecf0f1 !important;
-        border-radius: 3px !important;
-    }
-
-    .parent-checkbox:checked, .child-checkbox:checked {
-        background: #2ecc71 !important;
-        border-color: #27ae60 !important;
-    }
-
-    .parent-checkbox:indeterminate {
-        background: #f39c12 !important;
-        border-color: #e67e22 !important;
-    }
-
-    .parent-checkbox:indeterminate::after {
-        content: '−';
-        color: white;
+    /* Simple card design */
+    .pengawasan-checkbox:checked + label {
+        color: #28a745 !important;
         font-weight: bold;
-        display: block;
-        text-align: center;
-        line-height: 14px;
-        font-size: 14px;
     }
 
-    .badge-light {
-        background-color: rgba(255,255,255,0.9) !important;
-        color: #2c3e50 !important;
-        font-weight: 600;
-        border-radius: 12px;
-        padding: 0.25rem 0.75rem;
-        font-size: 0.8rem;
-    }
 
-    .badge-secondary {
-        background-color: #6c757d !important;
-        color: white !important;
-        border-radius: 10px;
-        padding: 0.2rem 0.6rem;
-        font-size: 0.75rem;
-    }
 
-    .font-weight-medium {
-        font-weight: 500;
-    }
 
-    /* Icon styling */
-    .fas.fa-folder-open {
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
 
-    .fas.fa-arrow-right {
-        color: #95a5a6 !important;
-        font-size: 0.9rem;
-    }
-
-    /* Text improvements */
-    .parent-row strong {
-        font-size: 1.05rem;
-        letter-spacing: 0.3px;
-    }
-
-    .child-row .font-weight-medium {
-        font-size: 0.95rem;
-        letter-spacing: 0.2px;
-    }
-
-    /* Small text styling */
-    small {
-        opacity: 0.8;
-        font-size: 0.8rem !important;
-    }
-
-    /* Enhancement untuk better visual feedback */
-    .parent-checkbox:focus, .child-checkbox:focus {
-        outline: 2px solid #3498db;
-        outline-offset: 2px;
-    }
-
-    /* Loading animation untuk feedback */
-    .hierarchy-group:hover {
-        box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-        transform: translateY(-1px);
+    /* Clean and simple styling */
+    .card {
         transition: all 0.2s ease;
     }
 
-    /* Better checkbox styling */
+    .card:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
     .form-check-label {
         cursor: pointer;
-        margin-left: 0.5rem;
     }
 
-    /* Improved badge contrast */
-    .badge-light {
-        text-shadow: none;
-        font-weight: 700;
+    /* Accordion styling */
+    .accordion .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
     }
 
-    /* Animation untuk smooth transitions */
-    .parent-row, .child-row {
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    .accordion .btn-link {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: 500;
     }
 
-    /* Multi-level styling */
-    .level-1 {
-        margin-left: 1.5rem;
+    .accordion .btn-link:hover {
+        text-decoration: none;
+        color: #0056b3;
     }
 
-    .level-2 {
-        margin-left: 3rem;
-        background-color: #e9ecef !important;
+    .accordion .btn-link:focus {
+        box-shadow: none;
     }
 
-    .level-3 {
-        margin-left: 4.5rem;
-        background-color: #dee2e6 !important;
+    .accordion-arrow {
+        transition: transform 0.2s ease;
+        font-size: 0.8rem;
     }
 
-    /* Penugasan section styling */
-    .penugasan-section {
-        background-color: #2c3e50;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 1px solid #34495e;
+    .accordion .btn-link[aria-expanded="true"] .accordion-arrow {
+        transform: rotate(180deg);
     }
 
-    .penugasan-section h6 {
-        border-bottom: 2px solid #3498db;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem;
+    .border-left-primary {
+        border-left: 3px solid #007bff !important;
     }
 
-    .sub-child {
-        border-left: 3px solid #6c757d;
-        padding-left: 1rem;
+    .badge-sm {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
     }
 
-    .grandchildren-container {
-        background-color: rgba(108, 117, 125, 0.1);
-        border-left: 2px dashed #6c757d;
-        margin-left: 2rem;
+    /* Detail cards styling */
+    .card-body .card {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .hierarchy-group {
-            margin-bottom: 0.5rem;
-        }
-
-        .parent-row, .child-row {
-            padding: 1rem !important;
-        }
-
-        .level-1, .level-2, .level-3 {
-            margin-left: 1rem;
-        }
+    .card-body .card:hover {
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        transform: translateY(-1px);
     }
 </style>
 <div class="container-fluid">
@@ -505,117 +328,112 @@ User Data - User Control
                                 </button>
                             </div>
                             <!-- Dark Theme Hierarchical Display -->
-                            @foreach($jenisTemuansHierarchy as $penugasanId => $penugasanGroup)
-                                <div class="penugasan-section mb-4">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h6 class="text-info mb-0">
-                                            <i class="fas fa-tasks mr-2"></i>
-                                            Pengawasan ID: {{ $penugasanId }}
-                                        </h6>
-                                        <div class="pengawasan-controls">
-                                            <div class="form-check form-check-inline">
-                                                <input type="checkbox"
-                                                       class="pengawasan-checkbox"
-                                                       id="pengawasan{{ $penugasanId }}"
-                                                       data-pengawasan-id="{{ $penugasanId }}"
-                                                       onchange="togglePengawasanSelection({{ $penugasanId }})">
-                                                <label class="form-check-label text-warning" for="pengawasan{{ $penugasanId }}">
-                                                    <strong>Pilih Semua dalam Pengawasan Ini</strong>
-                                                </label>
+                            <div class="accordion" id="pengawasanAccordion">
+                                @foreach($jenisTemuansHierarchy as $penugasanId => $penugasanGroup)
+                                    <div class="card mb-2">
+                                        <div class="card-header" id="heading{{ $penugasanId }}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="flex-grow-1">
+                                                    <button class="btn btn-link text-left p-0 collapsed" type="button" 
+                                                            data-toggle="collapse" 
+                                                            data-target="#collapse{{ $penugasanId }}" 
+                                                            aria-expanded="false" 
+                                                            aria-controls="collapse{{ $penugasanId }}">
+                                                        <h6 class="mb-0 text-primary">
+                                                            <i class="fas fa-database mr-2"></i>
+                                                            @if(isset($pengawasanData[$penugasanId]))
+                                                                {{ $pengawasanData[$penugasanId]['display_name'] }}
+                                                            @else
+                                                                Pengawasan ID: {{ $penugasanId }}
+                                                            @endif
+                                                            <i class="fas fa-chevron-down ml-2 accordion-arrow"></i>
+                                                        </h6>
+                                                        <small class="text-muted">
+                                                            {{ count($penugasanGroup) }} jenis temuan tersedia
+                                                        </small>
+                                                    </button>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <div class="form-check">
+                                                        <input type="checkbox"
+                                                               class="form-check-input pengawasan-checkbox"
+                                                               id="pengawasan{{ $penugasanId }}"
+                                                               data-pengawasan-id="{{ $penugasanId }}"
+                                                               onchange="togglePengawasanSelection({{ $penugasanId }})">
+                                                        <label class="form-check-label text-success font-weight-bold" for="pengawasan{{ $penugasanId }}">
+                                                            Pilih Data
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="collapse{{ $penugasanId }}" 
+                                             class="collapse" 
+                                             aria-labelledby="heading{{ $penugasanId }}" 
+                                             data-parent="#pengawasanAccordion">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    @foreach($penugasanGroup as $parentId => $hierarchy)
+                                                        @if(isset($hierarchy['parent']))
+                                                            <div class="col-md-6 mb-3">
+                                                                <div class="card h-100 border-left-primary">
+                                                                    <div class="card-body">
+                                                                        <h6 class="card-title text-primary">
+                                                                            <i class="fas fa-folder-open mr-2"></i>
+                                                                            @if($hierarchy['parent']->rekomendasi AND $hierarchy['parent']->kode_temuan)
+                                                                                {{ ucwords(strtolower($hierarchy['parent']->nama_temuan ?: $hierarchy['parent']->rekomendasi)) }}
+                                                                            @elseif($hierarchy['parent']->rekomendasi AND !$hierarchy['parent']->kode_temuan)
+                                                                                {{ ucwords(strtolower($hierarchy['parent']->rekomendasi)) }}
+                                                                            @else
+                                                                                {{ ucwords(strtolower($hierarchy['parent']->nama_temuan)) }}
+                                                                            @endif
+                                                                        </h6>
+                                                                        
+                                                                        @if($hierarchy['parent']->kode_temuan)
+                                                                            <p class="mb-2">
+                                                                                <span class="badge badge-primary">{{ $hierarchy['parent']->kode_temuan }}</span>
+                                                                                <small class="text-muted ml-2">Temuan dan Rekomendasi</small>
+                                                                            </p>
+                                                                        @else
+                                                                            <p class="mb-2">
+                                                                                <span class="badge badge-info">Rekomendasi</span>
+                                                                            </p>
+                                                                        @endif
+                                                                        
+                                                                        @if(!empty($hierarchy['children']) && is_array($hierarchy['children']))
+                                                                            <div class="mt-3">
+                                                                                <h6 class="text-muted">Sub Items:</h6>
+                                                                                <ul class="list-unstyled ml-3">
+                                                                                    @foreach($hierarchy['children'] as $child)
+                                                                                        <li class="mb-1">
+                                                                                            <i class="fas fa-arrow-right text-muted mr-2"></i>
+                                                                                            <small>
+                                                                                                @if($child->rekomendasi)
+                                                                                                    {{ ucwords(strtolower($child->rekomendasi)) }}
+                                                                                                @else
+                                                                                                    {{ ucwords(strtolower($child->nama_temuan)) }}
+                                                                                                @endif
+                                                                                                @if($child->kode_temuan)
+                                                                                                    <span class="badge badge-secondary badge-sm ml-1">{{ $child->kode_temuan }}</span>
+                                                                                                @endif
+                                                                                            </small>
+                                                                                        </li>
+                                                                                    @endforeach
+                                                                                </ul>
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    @foreach($penugasanGroup as $parentId => $hierarchy)
-                                        @if(isset($hierarchy['parent']))
-                                        <div class="hierarchy-group">
-                                            <!-- Parent Section -->
-                                            <div class="parent-section">
-                                                <input type="checkbox"
-                                                       class="parent-checkbox"
-                                                       id="parent{{ $hierarchy['parent']->id }}"
-                                                       name="jenis_temuan_ids[]"
-                                                       value="{{ $hierarchy['parent']->id }}"
-                                                       data-parent-id="{{ $hierarchy['parent']->id }}"
-                                                       data-pengawasan-id="{{ $penugasanId }}">
-
-                                                <div class="parent-row d-flex align-items-center justify-content-between">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="form-check mr-3">
-                                                            <label class="form-check-label" for="parent{{ $hierarchy['parent']->id }}">
-                                                                <!-- Checkbox handled by CSS -->
-                                                            </label>
-                                                        </div>
-                                                        <div>
-                                                            <strong>
-                                                                <i class="fas fa-folder-open mr-2"></i>
-                                                                @if($hierarchy['parent']->rekomendasi AND $hierarchy['parent']->kode_temuan)
-                                                                    {{ strtoupper($hierarchy['parent']->nama_temuan) }}
-                                                                    ({{ strtoupper($hierarchy['parent']->rekomendasi) }})
-                                                                    <span class="badge badge-light ml-2">{{ $hierarchy['parent']->kode_temuan }}</span>
-                                                                    <small class="ml-2">Temuan dan Rekom</small>
-                                                                @endif
-                                                                @if ($hierarchy['parent']->rekomendasi AND $hierarchy['parent']->kode_temuan == NULL)
-                                                                    {{ strtoupper($hierarchy['parent']->rekomendasi) }}
-                                                                @endif
-                                                            </strong>
-                                                        </div>
-                                                    </div>
-                                                    @if(count($hierarchy['children']) > 0)
-                                                    <div>
-                                                        <span class="badge badge-light">
-                                                            <i class="fas fa-sitemap mr-1"></i>
-                                                            {{ count($hierarchy['children']) }} sub-item{{ count($hierarchy['children']) > 1 ? 's' : '' }}
-                                                        </span>
-                                                    </div>
-                                                    @endif
-                                                </div>
-                                            </div>
-
-                                            <!-- Children Section -->
-                                            @if(count($hierarchy['children']) > 0)
-                                            <div class="children-container">
-                                                @foreach($hierarchy['children'] as $index => $child)
-                                                <div class="child-row d-flex align-items-center">
-                                                    <div class="ml-4 d-flex align-items-center w-100">
-                                                        <div class="form-check mr-3">
-                                                            <input type="checkbox"
-                                                                   class="child-checkbox"
-                                                                   id="child{{ $child->id }}"
-                                                                   name="jenis_temuan_ids[]"
-                                                                   value="{{ $child->id }}"
-                                                                   data-parent-id="{{ $hierarchy['parent']->id }}"
-                                                                   data-pengawasan-id="{{ $penugasanId }}">
-                                                            <label class="form-check-label" for="child{{ $child->id }}"></label>
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            <div class="d-flex align-items-center justify-content-between">
-                                                                <div class="d-flex align-items-center">
-                                                                    <i class="fas fa-arrow-right mr-3"></i>
-                                                                    <span class="font-weight-medium">
-                                                                        @if($child->rekomendasi)
-                                                                            {{ ucwords(strtolower($child->rekomendasi)) }}
-                                                                        @else
-                                                                            {{ $child->nama_temuan }}
-                                                                        @endif
-                                                                    </span>
-                                                                    @if($child->kode_temuan)
-                                                                        <span class="badge badge-secondary ml-2">{{ $child->kode_temuan }}</span>
-                                                                    @endif
-                                                                </div>
-                                                                <small>(ID: {{ $child->id }})</small>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @endforeach
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
                     </div>
 
@@ -751,7 +569,20 @@ $(document).ready(function() {
     $('#accessForm').on('submit', function(e) {
         e.preventDefault();
 
-        const formData = $(this).serialize();
+        // Collect selected pengawasan IDs
+        const selectedPengawasanIds = [];
+        $('.pengawasan-checkbox:checked').each(function() {
+            selectedPengawasanIds.push($(this).data('pengawasan-id'));
+        });
+
+        // Prepare form data
+        const formData = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            user_id: $('#editUserId').val(),
+            access_type: $('input[name="access_type"]:checked').val(),
+            pengawasan_ids: selectedPengawasanIds,
+            notes: $('#notes').val()
+        };
 
         $.post('/adminTL/user-control/update-user-data-access', formData)
         .done(function(response) {
@@ -817,12 +648,16 @@ function editAccess(userId) {
                 console.log('Allowed IDs processed:', allowedIds);
 
                 // Clear all checkboxes first
-                $('.parent-checkbox, .child-checkbox').prop('checked', false);
+                $('.pengawasan-checkbox').prop('checked', false);
 
-                // Set checked states based on allowed IDs
+                // Since we changed to pengawasan-level selection, we need to check which pengawasan contains these IDs
                 allowedIds.forEach(function(id) {
                     console.log('Checking ID:', id);
-                    $('.parent-checkbox[value="' + id + '"], .child-checkbox[value="' + id + '"]').prop('checked', true);
+                    // Find which pengawasan this ID belongs to and check that pengawasan
+                    const pengawasanId = findPengawasanForId(id);
+                    if (pengawasanId) {
+                        $('#pengawasan' + pengawasanId).prop('checked', true);
+                    }
                 });
 
                 // Update parent-child relationships after setting checkboxes
@@ -846,17 +681,13 @@ function editAccess(userId) {
 }
 
 function selectAllJenis() {
-    $('.parent-checkbox, .child-checkbox').prop('checked', true);
     $('.pengawasan-checkbox').prop('checked', true);
-    updateAllParentStates();
-    updateAllPengawasanStates();
+    console.log('All pengawasan selected');
 }
 
 function deselectAllJenis() {
-    $('.parent-checkbox, .child-checkbox').prop('checked', false);
     $('.pengawasan-checkbox').prop('checked', false);
-    updateAllParentStates();
-    updateAllPengawasanStates();
+    console.log('All pengawasan deselected');
 }
 
 // Function to toggle selection for entire pengawasan group
@@ -864,11 +695,8 @@ function togglePengawasanSelection(pengawasanId) {
     const pengawasanCheckbox = $('#pengawasan' + pengawasanId);
     const isChecked = pengawasanCheckbox.is(':checked');
 
-    // Select/deselect all checkboxes in this pengawasan
-    $('[data-pengawasan-id="' + pengawasanId + '"]').prop('checked', isChecked);
-
-    // Update parent states for this pengawasan
-    updatePengawasanParentStates(pengawasanId);
+    // Since we only have pengawasan-level selection now, just update the state
+    console.log('Pengawasan ' + pengawasanId + ' toggled to: ' + isChecked);
 }
 
 // Function to update pengawasan checkbox state based on children
@@ -893,25 +721,10 @@ function updateAllPengawasanStates() {
     updatePengawasanStates();
 }
 
-// Function to update parent states within a specific pengawasan
+// Function to update parent states within a specific pengawasan (simplified)
 function updatePengawasanParentStates(pengawasanId) {
-    // Update parent checkboxes within this pengawasan
-    $('[data-pengawasan-id="' + pengawasanId + '"].parent-checkbox').each(function() {
-        const parentId = $(this).data('parent-id');
-        const children = $('[data-parent-id="' + parentId + '"][data-pengawasan-id="' + pengawasanId + '"].child-checkbox');
-
-        if (children.length > 0) {
-            const checkedChildren = children.filter(':checked').length;
-
-            if (checkedChildren === 0) {
-                $(this).prop('indeterminate', false);
-            } else if (checkedChildren === children.length) {
-                $(this).prop('checked', true).prop('indeterminate', false);
-            } else {
-                $(this).prop('indeterminate', true);
-            }
-        }
-    });
+    // Since no child checkboxes, parent states are independent
+    console.log('Pengawasan ' + pengawasanId + ' parent states updated (no children)');
 }
 
 // Group selection functions
@@ -936,84 +749,49 @@ $(document).ready(function() {
         console.log('Parent ' + parentId + ' changed to: ' + isChecked);
     });
 
-    // Child checkbox change handler
-    $(document).on('change', '.child-checkbox', function() {
-        const rootParentId = $(this).data('parent-id');
-        const directParentId = $(this).data('direct-parent');
-        const childId = $(this).val();
-        const isChecked = $(this).is(':checked');
-        const pengawasanId = $(this).data('pengawasan-id');
-
-        // If this child has its own children, cascade the selection
-        if (isChecked) {
-            // Check all children of this child
-            $('.child-checkbox[data-direct-parent="' + childId + '"]').prop('checked', true);
-        } else {
-            // Uncheck all children of this child
-            $('.child-checkbox[data-direct-parent="' + childId + '"]').prop('checked', false);
-        }
-
-        // Update parent states
-        updateParentState(rootParentId);
-
-        // Update pengawasan checkbox state
-        updatePengawasanStates();
-
-        console.log('Child ' + childId + ' changed, updating parent ' + rootParentId);
-    });
-
-    // Parent checkbox change handler (updated)
-    $(document).on('change', '.parent-checkbox', function() {
-        const parentId = $(this).data('parent-id');
-        const isChecked = $(this).is(':checked');
-        const pengawasanId = $(this).data('pengawasan-id');
-
-        // Check/uncheck ALL descendants (children, grandchildren, etc.)
-        $('.child-checkbox[data-parent-id="' + parentId + '"]').prop('checked', isChecked);
-
-        // Update pengawasan checkbox state
-        updatePengawasanStates();
-
-        console.log('Parent ' + parentId + ' changed to: ' + isChecked);
-    });
+    // No more parent checkboxes - only pengawasan-level selection
 });
 
-function updateParentState(parentId) {
-    const allChildren = $('.child-checkbox[data-parent-id="' + parentId + '"]');
-    const checkedChildren = $('.child-checkbox[data-parent-id="' + parentId + '"]:checked');
-    const parentCheckbox = $('.parent-checkbox[data-parent-id="' + parentId + '"]');
-
-    if (allChildren.length === 0) {
-        // No children - parent can be independent
-        return;
+// Helper function to find which pengawasan an ID belongs to
+function findPengawasanForId(jenisTemuanId) {
+    try {
+        // This should be populated from server-side data
+        const hierarchyData = @json($jenisTemuansHierarchy);
+        console.log('Finding pengawasan for ID:', jenisTemuanId);
+        console.log('Hierarchy data:', hierarchyData);
+        
+        for (const pengawasanId in hierarchyData) {
+            const penugasanGroup = hierarchyData[pengawasanId];
+            for (const parentId in penugasanGroup) {
+                const hierarchy = penugasanGroup[parentId];
+                
+                // Check parent
+                if (hierarchy.parent && hierarchy.parent.id == jenisTemuanId) {
+                    console.log('Found in parent:', pengawasanId);
+                    return pengawasanId;
+                }
+                
+                // Check if children exists and is an array
+                if (hierarchy.children && Array.isArray(hierarchy.children)) {
+                    for (let i = 0; i < hierarchy.children.length; i++) {
+                        const child = hierarchy.children[i];
+                        if (child && child.id == jenisTemuanId) {
+                            console.log('Found in children:', pengawasanId);
+                            return pengawasanId;
+                        }
+                    }
+                } else if (hierarchy.children) {
+                    console.warn('Children is not an array:', hierarchy.children);
+                }
+            }
+        }
+        console.log('ID not found in any pengawasan');
+        return null;
+    } catch (error) {
+        console.error('Error in findPengawasanForId:', error);
+        return null;
     }
-
-    if (checkedChildren.length === 0) {
-        // No children checked
-        parentCheckbox.prop('checked', false);
-        parentCheckbox.prop('indeterminate', false);
-    } else if (checkedChildren.length === allChildren.length) {
-        // All children checked
-        parentCheckbox.prop('checked', true);
-        parentCheckbox.prop('indeterminate', false);
-    } else {
-        // Some children checked - indeterminate state
-        parentCheckbox.prop('checked', false);
-        parentCheckbox.prop('indeterminate', true);
-    }
-
-    console.log('Parent ' + parentId + ' updated: checked=' + checkedChildren.length + '/' + allChildren.length);
-}
-
-function updateAllParentStates() {
-    // Update all parent states based on their children
-    $('.parent-checkbox').each(function() {
-        const parentId = $(this).data('parent-id');
-        updateParentState(parentId);
-    });
-}
-
-// Keep existing group functions for compatibility
+}// Keep existing group functions for compatibility
 function selectGroupJenis(parentId) {
     $('.parent-checkbox[data-parent-id="' + parentId + '"]').prop('checked', true).trigger('change');
 }
