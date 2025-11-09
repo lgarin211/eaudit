@@ -660,8 +660,8 @@ function editAccess(userId) {
                     }
                 });
 
-                // Update parent-child relationships after setting checkboxes
-                updateAllParentStates();
+                // No need to update parent states since we use pengawasan-level selection
+                console.log('Pengawasan checkboxes updated based on allowed IDs');
             } else {
                 $('#jenisTemuanSection').hide();
             }
@@ -721,36 +721,11 @@ function updateAllPengawasanStates() {
     updatePengawasanStates();
 }
 
-// Function to update parent states within a specific pengawasan (simplified)
+// Simplified functions for pengawasan-level selection only
 function updatePengawasanParentStates(pengawasanId) {
-    // Since no child checkboxes, parent states are independent
-    console.log('Pengawasan ' + pengawasanId + ' parent states updated (no children)');
+    // No child checkboxes, so no need to update parent states  
+    console.log('Pengawasan ' + pengawasanId + ' - using simple selection');
 }
-
-// Group selection functions
-function selectGroupJenis(parentId) {
-    $('.group-' + parentId).prop('checked', true);
-}
-
-function deselectGroupJenis(parentId) {
-    $('.group-' + parentId).prop('checked', false);
-}
-
-// Enhanced multi-level parent-child checkbox logic
-$(document).ready(function() {
-    // Parent checkbox change handler
-    $(document).on('change', '.parent-checkbox', function() {
-        const parentId = $(this).data('parent-id');
-        const isChecked = $(this).is(':checked');
-
-        // Check/uncheck ALL descendants (children, grandchildren, etc.)
-        $('.child-checkbox[data-parent-id="' + parentId + '"]').prop('checked', isChecked);
-
-        console.log('Parent ' + parentId + ' changed to: ' + isChecked);
-    });
-
-    // No more parent checkboxes - only pengawasan-level selection
-});
 
 // Helper function to find which pengawasan an ID belongs to
 function findPengawasanForId(jenisTemuanId) {
@@ -792,13 +767,7 @@ function findPengawasanForId(jenisTemuanId) {
         return null;
     }
 }// Keep existing group functions for compatibility
-function selectGroupJenis(parentId) {
-    $('.parent-checkbox[data-parent-id="' + parentId + '"]').prop('checked', true).trigger('change');
-}
-
-function deselectGroupJenis(parentId) {
-    $('.parent-checkbox[data-parent-id="' + parentId + '"]').prop('checked', false).trigger('change');
-}
+// Legacy functions removed - now using pengawasan-level selection only
 
 function showAlert(type, message) {
     console.log('showAlert called:', type, message);
