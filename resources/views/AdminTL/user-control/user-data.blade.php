@@ -723,7 +723,7 @@ function updateAllPengawasanStates() {
 
 // Simplified functions for pengawasan-level selection only
 function updatePengawasanParentStates(pengawasanId) {
-    // No child checkboxes, so no need to update parent states  
+    // No child checkboxes, so no need to update parent states
     console.log('Pengawasan ' + pengawasanId + ' - using simple selection');
 }
 
