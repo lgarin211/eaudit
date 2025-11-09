@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Jenis_temuan;
+use App\Models\Pengawasan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -176,17 +177,65 @@ class UserControlController extends Controller
 
             // Get all jenis temuan and build multi-level hierarchical structure
             $jenisTemuans = Jenis_temuan::orderBy('id_parent')->orderBy('id')->get();
-            // $jenisTemuans = DB::table('jenis_temuans')->orderBy('id_parent')->orderBy('id')->get();
+
+            // Get pengawasan data with penugasan info for display
+            $pengawasanData = [];
+            $uniquePengawasanIds = $jenisTemuans->pluck('id_pengawasan')->unique();
+
+            foreach ($uniquePengawasanIds as $pengawasanId) {
+                $pengawasan = Pengawasan::find($pengawasanId);
+                if ($pengawasan) {
+                    // Try to get penugasan data via API
+                    $penugasanInfo = null;
+                    try {
+                        $token = session('ctoken');
+                        if ($token && $pengawasan->id_penugasan) {
+                            $response = \Illuminate\Support\Facades\Http::get("http://127.0.0.1:8000/api/penugasan-edit/{$pengawasan->id_penugasan}", [
+                                'token' => $token
+                            ]);
+
+                            if ($response->successful()) {
+                                $apiData = $response->json();
+                                $penugasanInfo = $apiData['data'] ?? null;
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('Could not fetch penugasan data for ID: ' . $pengawasan->id_penugasan);
+                    }
+
+                    $pengawasanData[$pengawasanId] = [
+                        'pengawasan' => $pengawasan,
+                        'penugasan_info' => $penugasanInfo,
+                        'display_name' => $this->buildDisplayName($pengawasan, $penugasanInfo)
+                    ];
+                }
+            }
+
             $jenisTemuansHierarchy = [];
             foreach ($jenisTemuans as $item) {
                 if ($item->id == $item->id_parent) {
+                    // Initialize parent with empty children array
                     $jenisTemuansHierarchy[$item->id_pengawasan][$item->id] = [
                         'parent' => $item,
                         'children' => [],
                         'nama_temuan' => $item->nama_temuan
                     ];
                 } else {
-                    $jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent]['children'][$item->id] = $item;
+                    // Ensure parent exists before adding children
+                    if (!isset($jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent])) {
+                        $jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent] = [
+                            'parent' => null,
+                            'children' => [],
+                            'nama_temuan' => ''
+                        ];
+                    }
+
+                    // Ensure children is array before adding
+                    if (!is_array($jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent]['children'])) {
+                        $jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent]['children'] = [];
+                    }
+
+                    $jenisTemuansHierarchy[$item->id_pengawasan][$item->id_parent]['children'][] = $item;
                 }
             }
 
@@ -195,7 +244,7 @@ class UserControlController extends Controller
 
             // dd($jenisTemuansHierarchy);
 
-            return view('AdminTL.user-control.user-data', compact('users', 'jenisTemuans', 'jenisTemuansGrouped', 'jenisTemuansHierarchy'));
+            return view('AdminTL.user-control.user-data', compact('users', 'jenisTemuans', 'jenisTemuansGrouped', 'jenisTemuansHierarchy', 'pengawasanData'));
         } catch (\Exception $e) {
             Log::error('Error loading user data access: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data akses pengguna.');
@@ -210,17 +259,25 @@ class UserControlController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'access_type' => 'required|in:all,specific',
-            'jenis_temuan_ids' => 'nullable|array',
-            'jenis_temuan_ids.*' => 'exists:jenis_temuans,id',
+            'pengawasan_ids' => 'nullable|array',
+            'pengawasan_ids.*' => 'exists:pengawasans,id',
             'notes' => 'nullable|string|max:1000'
         ]);
 
         try {
             DB::beginTransaction();
 
+            // If specific access, get all jenis_temuan_ids from selected pengawasan
+            $jenisTemuanIds = [];
+            if ($request->access_type === 'specific' && !empty($request->pengawasan_ids)) {
+                $jenisTemuanIds = Jenis_temuan::whereIn('id_pengawasan', $request->pengawasan_ids)
+                    ->pluck('id')
+                    ->toArray();
+            }
+
             $accessData = [
                 'access_type' => $request->access_type,
-                'jenis_temuan_ids' => $request->access_type === 'specific' ? json_encode($request->jenis_temuan_ids ?? []) : null,
+                'jenis_temuan_ids' => $request->access_type === 'specific' ? json_encode($jenisTemuanIds) : null,
                 'notes' => $request->notes,
                 'updated_at' => now(),
             ];
@@ -331,5 +388,41 @@ class UserControlController extends Controller
             $count += $this->countAllDescendants($child->children);
         }
         return $count;
+    }
+
+    /**
+     * Build display name for pengawasan section
+     */
+    private function buildDisplayName($pengawasan, $penugasanInfo)
+    {
+        $displayParts = [];
+
+        // Add obrik name if available
+        if ($penugasanInfo && isset($penugasanInfo['nama_obrik'])) {
+            $displayParts[] = $penugasanInfo['nama_obrik'];
+        } elseif ($penugasanInfo && isset($penugasanInfo['obrik'])) {
+            $displayParts[] = $penugasanInfo['obrik'];
+        } elseif ($pengawasan->wilayah) {
+            $displayParts[] = $pengawasan->wilayah;
+        }
+
+        // Add penugasan name if available
+        if ($penugasanInfo && isset($penugasanInfo['nama_penugasan'])) {
+            $displayParts[] = $penugasanInfo['nama_penugasan'];
+        } elseif ($penugasanInfo && isset($penugasanInfo['judul'])) {
+            $displayParts[] = $penugasanInfo['judul'];
+        } elseif ($penugasanInfo && isset($penugasanInfo['title'])) {
+            $displayParts[] = $penugasanInfo['title'];
+        }
+
+        // Fallback to basic info if no penugasan data
+        if (empty($displayParts)) {
+            $displayParts[] = 'Pengawasan ID: ' . $pengawasan->id;
+            if ($pengawasan->id_penugasan) {
+                $displayParts[] = 'Penugasan ID: ' . $pengawasan->id_penugasan;
+            }
+        }
+
+        return implode(' - ', $displayParts);
     }
 }
