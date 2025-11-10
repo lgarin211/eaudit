@@ -250,7 +250,7 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-primary upload-to-rekomendasi-btn" 
+                                                <button type="button" class="btn btn-sm btn-primary upload-to-rekomendasi-btn"
                                                         data-rekomendasi-id="{{ $rekomendasi->id }}"
                                                         data-rekomendasi-name="{{ $rekomendasi->nama_temuan }}"
                                                         title="Upload ke Rekomendasi Ini"
@@ -562,20 +562,20 @@ $(document).ready(function() {
     $('.upload-to-rekomendasi-btn').on('click', function() {
         var rekomendasiId = $(this).data('rekomendasi-id');
         var rekomendasiName = $(this).data('rekomendasi-name');
-        
+
         // Set the selected rekomendasi in the form
         $('#rekomendasi_select').val(rekomendasiId).trigger('change');
-        
+
         // Scroll to upload form
         $('html, body').animate({
             scrollTop: $('#uploadForm').offset().top - 100
         }, 500);
-        
+
         // Focus on file input
         setTimeout(function() {
             $('#file').focus();
         }, 600);
-        
+
         toastr.info('Rekomendasi "' + rekomendasiName + '" telah dipilih. Silakan pilih file untuk diupload.');
     });
 
@@ -584,14 +584,14 @@ $(document).ready(function() {
         e.preventDefault();
         var fullText = $(this).data('full-text');
         var parentDiv = $(this).parent();
-        
+
         if ($(this).text().includes('[Lihat semua]')) {
             parentDiv.html(fullText + ' <a href="#" class="text-primary toggle-full-text" data-full-text="' + fullText + '"><small>[Sembunyikan]</small></a>');
         } else {
             var shortText = fullText.length > 100 ? fullText.substring(0, 100) + '...' : fullText;
             parentDiv.html(shortText + ' <a href="#" class="text-primary toggle-full-text" data-full-text="' + fullText + '"><small>[Lihat semua]</small></a>');
         }
-        
+
         // Re-bind the click event
         $('.toggle-full-text').off('click').on('click', arguments.callee);
     });

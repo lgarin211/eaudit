@@ -104,7 +104,7 @@
                                                     $status = $pengawasan['status_LHP'] ?? 'Belum Jadi';
                                                     $statusClass = '';
                                                     $statusIcon = '';
-                                                    
+
                                                     switch($status) {
                                                         case 'Belum Jadi':
                                                             $statusClass = 'bg-warning text-dark';
@@ -156,7 +156,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="{{ route('opdTL.menuA3.detail', ['id' => $pengawasan['id']]) }}" 
+                                                <a href="{{ route('opdTL.menuA3.detail', ['id' => $pengawasan['id']]) }}"
                                                    class="btn btn-primary btn-sm">
                                                     <i class="mdi mdi-eye mr-1"></i>
                                                     Detail

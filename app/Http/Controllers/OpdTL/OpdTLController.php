@@ -477,7 +477,7 @@ class OpdTLController extends Controller
                     'p.tipe',
                     'p.jenis',
                     'p.wilayah',
-                    'p.pemeriksa', 
+                    'p.pemeriksa',
                     'p.status_LHP',
                     'p.created_at',
                     'p.updated_at'
