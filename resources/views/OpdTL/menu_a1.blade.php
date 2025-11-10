@@ -77,12 +77,15 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('opdTL.menuA1.detail', $item['id']) }}"
+                                        {{-- <a href="{{ route('opdTL.menuA1.detail', $item['id']) }}"
                                            class="btn btn-gradient-info btn-sm"
+                                           title="Lihat Detail"> --}}
+                                        <a href="{{ url('adminTL/datadukung/rekom/' . $item['id']) }}"
+                                           class="btn btn-primary "
                                            title="Lihat Detail">
                                             <i class="mdi mdi-eye"></i> Lihat
                                         </a>
-                                        <span class="badge badge-secondary ml-2">Read Only</span>
+                                        <span class="badge ml-2">Read Only</span>
                                     </td>
                                 </tr>
                                 @empty

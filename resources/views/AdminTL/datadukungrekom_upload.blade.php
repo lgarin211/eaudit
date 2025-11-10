@@ -238,10 +238,6 @@
                                     $verifikasiType = 'temuan';
                                 }
                             @endphp
-                            <a href="{{ route('adminTL.verifikasi.show', [$verifikasiType, $pengawasan['id']]) }}"
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-edit"></i> Kelola Verifikasi
-                            </a>
                         </div>
                     @endif
                 </div>

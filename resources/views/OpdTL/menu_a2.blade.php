@@ -55,12 +55,10 @@
                                             <td>{{ $item['nama_obrik'] ?? 'DPU' }}</td>
                                             <td>{{ $item['tipe_rekomendasi'] ?? 'TemuandanRekomendasi' }}</td>
                                             <td>
-                                                <a href="{{ route('opdTL.menuA2.detail', ['id' => $item['id']]) }}" class="btn btn-primary btn-sm">
-                                                    Edit
+                                                {{-- <a href="{{ route('opdTL.menuA2.detail', ['id' => $item['id']]) }}" class="btn btn-primary btn-sm"> --}}
+                                                <a href="{{ url('adminTL/datadukung/temuan/' . $item['id']) }}" class="btn btn-primary btn-sm">
+                                                    Lihat
                                                 </a>
-                                                <button type="button" class="btn btn-success btn-sm" disabled>
-                                                    Hapus
-                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach

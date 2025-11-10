@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Pengawasan;
 use App\Models\Jenis_temuan;
 use App\Models\DataDukung;
+use App\Models\DataDukungRekom;
 use App\Models\User;
 use App\Models\UserDataAccess;
 
@@ -431,6 +432,433 @@ class OpdTLController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Display Menu A3 - List Rekomendasi dengan Upload Access (Grouped by Pengawasan)
+     */
+    public function menuA3()
+    {
+        try {
+            // Get current user's data access configuration
+            $currentUser = auth()->user();
+            $userDataAccess = UserDataAccess::where('user_id', $currentUser->id)->first();
+
+            // Apply data access filtering to get allowed jenis_temuan IDs
+            if (!$userDataAccess || !$userDataAccess->is_active || $userDataAccess->access_type !== 'specific') {
+                return view('OpdTL.menu_a3', ['data' => []]);
+            }
+
+            $allowedJenisTemuanIds = $userDataAccess->jenis_temuan_ids ?? [];
+            if (empty($allowedJenisTemuanIds) || !is_array($allowedJenisTemuanIds)) {
+                return view('OpdTL.menu_a3', ['data' => []]);
+            }
+
+            // Get pengawasan IDs that contain allowed jenis_temuan with rekomendasi
+            $pengawasanIds = DB::table('jenis_temuans')
+                ->whereIn('id', $allowedJenisTemuanIds)
+                ->where('rekomendasi', '!=', '')
+                ->whereNotNull('rekomendasi')
+                ->distinct()
+                ->pluck('id_pengawasan')
+                ->toArray();
+
+            if (empty($pengawasanIds)) {
+                return view('OpdTL.menu_a3', ['data' => []]);
+            }
+
+            // Get pengawasan data similar to AdminTL verifikasi pattern
+            $pengawasanData = DB::table('pengawasans as p')
+                ->select(
+                    'p.id',
+                    'p.id_penugasan',
+                    'p.tipe',
+                    'p.jenis',
+                    'p.wilayah',
+                    'p.pemeriksa', 
+                    'p.status_LHP',
+                    'p.created_at',
+                    'p.updated_at'
+                )
+                ->whereIn('p.id', $pengawasanIds)
+                ->orderByRaw("CASE
+                    WHEN p.status_LHP = 'Di Proses' THEN 1
+                    WHEN p.status_LHP = 'Belum Jadi' THEN 2
+                    WHEN p.status_LHP = 'Diterima' THEN 3
+                    WHEN p.status_LHP = 'Ditolak' THEN 4
+                    ELSE 5
+                END")
+                ->orderBy('p.updated_at', 'desc')
+                ->get();
+
+            // Enrich with penugasan info and rekomendasi count
+            $enrichedData = [];
+            foreach ($pengawasanData as $pengawasan) {
+                // Get penugasan info via API
+                $penugasanInfo = null;
+                try {
+                    $token = session('ctoken');
+                    if ($token && $pengawasan->id_penugasan) {
+                        $response = Http::get("http://127.0.0.1:8000/api/penugasan-edit/{$pengawasan->id_penugasan}", [
+                            'token' => $token
+                        ]);
+
+                        if ($response->successful()) {
+                            $apiData = $response->json();
+                            $penugasanInfo = $apiData['data'] ?? null;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Could not fetch penugasan data for ID: ' . $pengawasan->id_penugasan);
+                }
+
+                // Count rekomendasi that user has access to in this pengawasan
+                $rekomendasiCount = DB::table('jenis_temuans')
+                    ->where('id_pengawasan', $pengawasan->id)
+                    ->whereIn('id', $allowedJenisTemuanIds)
+                    ->where('rekomendasi', '!=', '')
+                    ->whereNotNull('rekomendasi')
+                    ->count();
+
+                // Count uploaded files for this pengawasan (from user's accessible rekomendasi)
+                $fileCount = DB::table('datadukung_rekoms as dr')
+                    ->join('jenis_temuans as jt', 'dr.id_jenis_temuan', '=', 'jt.id')
+                    ->where('jt.id_pengawasan', $pengawasan->id)
+                    ->whereIn('jt.id', $allowedJenisTemuanIds)
+                    ->count();
+
+                $enrichedData[] = [
+                    'id' => $pengawasan->id,
+                    'id_penugasan' => $pengawasan->id_penugasan,
+                    'tipe' => $pengawasan->tipe,
+                    'jenis' => $pengawasan->jenis,
+                    'wilayah' => $pengawasan->wilayah,
+                    'pemeriksa' => $pengawasan->pemeriksa,
+                    'status_LHP' => $pengawasan->status_LHP,
+                    'created_at' => $pengawasan->created_at,
+                    'updated_at' => $pengawasan->updated_at,
+                    'penugasan_info' => $penugasanInfo,
+                    'rekomendasi_count' => $rekomendasiCount,
+                    'file_count' => $fileCount
+                ];
+            }
+
+            return view('OpdTL.menu_a3', ['data' => $enrichedData]);
+
+        } catch (\Exception $e) {
+            Log::error('Error in OpdTL menuA3:', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id()
+            ]);
+
+            return view('OpdTL.menu_a3', ['data' => []]);
+        }
+    }
+
+    /**
+     * Display Menu A3 Detail - Pengawasan Detail with Upload (Pengawasan-based)
+     */
+    public function menuA3Detail($pengawasanId)
+    {
+        try {
+            // Get current user's data access configuration
+            $currentUser = auth()->user();
+            $userDataAccess = UserDataAccess::where('user_id', $currentUser->id)->first();
+
+            // Check if user has access
+            if (!$userDataAccess || !$userDataAccess->is_active || $userDataAccess->access_type !== 'specific') {
+                return redirect()->route('opdTL.menuA3')->with('error', 'Anda tidak memiliki akses untuk melihat data ini.');
+            }
+
+            $allowedJenisTemuanIds = $userDataAccess->jenis_temuan_ids ?? [];
+            if (empty($allowedJenisTemuanIds) || !is_array($allowedJenisTemuanIds)) {
+                return redirect()->route('opdTL.menuA3')->with('error', 'Anda tidak memiliki akses untuk melihat data ini.');
+            }
+
+            // Get pengawasan details
+            $pengawasan = DB::table('pengawasans')
+                ->select(
+                    'id',
+                    'id_penugasan',
+                    'tipe',
+                    'jenis',
+                    'wilayah',
+                    'pemeriksa',
+                    'status_LHP',
+                    'created_at',
+                    'updated_at'
+                )
+                ->where('id', $pengawasanId)
+                ->first();
+
+            if (!$pengawasan) {
+                return redirect()->route('opdTL.menuA3')->with('error', 'Pengawasan tidak ditemukan.');
+            }
+
+            // Check if user has access to any rekomendasi in this pengawasan
+            $accessibleRekomendasi = DB::table('jenis_temuans')
+                ->where('id_pengawasan', $pengawasanId)
+                ->whereIn('id', $allowedJenisTemuanIds)
+                ->where('rekomendasi', '!=', '')
+                ->whereNotNull('rekomendasi')
+                ->count();
+
+            if ($accessibleRekomendasi === 0) {
+                return redirect()->route('opdTL.menuA3')->with('error', 'Anda tidak memiliki akses ke rekomendasi dalam pengawasan ini.');
+            }
+
+            // Get penugasan info via API
+            $penugasanInfo = null;
+            try {
+                $token = session('ctoken');
+                if ($token && $pengawasan->id_penugasan) {
+                    $response = Http::get("http://127.0.0.1:8000/api/penugasan-edit/{$pengawasan->id_penugasan}", [
+                        'token' => $token
+                    ]);
+
+                    if ($response->successful()) {
+                        $apiData = $response->json();
+                        $penugasanInfo = $apiData['data'] ?? null;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning('Could not fetch penugasan data for ID: ' . $pengawasan->id_penugasan);
+            }
+
+            // Get rekomendasi that user has access to in this pengawasan
+            $rekomendasiList = DB::table('jenis_temuans')
+                ->select(
+                    'id',
+                    'nama_temuan',
+                    'rekomendasi',
+                    'kode_temuan'
+                )
+                ->where('id_pengawasan', $pengawasanId)
+                ->whereIn('id', $allowedJenisTemuanIds)
+                ->where('rekomendasi', '!=', '')
+                ->whereNotNull('rekomendasi')
+                ->orderBy('id')
+                ->get();
+
+            // Get uploaded files for all accessible rekomendasi in this pengawasan
+            $uploadedFiles = DB::table('datadukung_rekoms as dr')
+                ->join('jenis_temuans as jt', 'dr.id_jenis_temuan', '=', 'jt.id')
+                ->select(
+                    'dr.*',
+                    'jt.nama_temuan',
+                    'jt.kode_temuan'
+                )
+                ->where('jt.id_pengawasan', $pengawasanId)
+                ->whereIn('jt.id', $allowedJenisTemuanIds)
+                ->orderBy('dr.created_at', 'desc')
+                ->get();
+
+            // Check if upload is allowed (status_LHP is 'Di Proses')
+            $allowUpload = ($pengawasan->status_LHP === 'Di Proses');
+
+            return view('OpdTL.menu_a3_detail', [
+                'pengawasan' => $pengawasan,
+                'penugasanInfo' => $penugasanInfo,
+                'rekomendasiList' => $rekomendasiList,
+                'uploadedFiles' => $uploadedFiles,
+                'allowUpload' => $allowUpload
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error in OpdTL menuA3Detail:', [
+                'error' => $e->getMessage(),
+                'pengawasan_id' => $pengawasanId,
+                'user_id' => auth()->id()
+            ]);
+
+            return redirect()->route('opdTL.menuA3')->with('error', 'Terjadi kesalahan saat memuat data');
+        }
+    }
+
+    /**
+     * Upload file for specific rekomendasi
+     */
+    public function uploadFileRekomendasi(Request $request)
+    {
+        try {
+            // Validate file and required data
+            $request->validate([
+                'file' => 'required|file|max:10240', // Max 10MB
+                'id_jenis_temuan' => 'required|exists:jenis_temuans,id',
+            ]);
+
+            // Check user access to this jenis_temuan
+            $currentUser = auth()->user();
+            $userDataAccess = UserDataAccess::where('user_id', $currentUser->id)->first();
+
+            if (!$userDataAccess || !$userDataAccess->is_active || $userDataAccess->access_type !== 'specific') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses untuk mengupload file'
+                ], 403);
+            }
+
+            $allowedJenisTemuanIds = $userDataAccess->jenis_temuan_ids ?? [];
+            if (!in_array($request->id_jenis_temuan, $allowedJenisTemuanIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses untuk mengupload file ke rekomendasi ini'
+                ], 403);
+            }
+
+            // Check if pengawasan status allows upload
+            $jenisTemuan = DB::table('jenis_temuans as jt')
+                ->join('pengawasans as p', 'jt.id_pengawasan', '=', 'p.id')
+                ->select('p.status_LHP')
+                ->where('jt.id', $request->id_jenis_temuan)
+                ->first();
+
+            if (!$jenisTemuan || $jenisTemuan->status_LHP !== 'Di Proses') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Upload tidak diizinkan. Status LHP bukan "Di Proses"'
+                ], 403);
+            }
+
+            $file = $request->file('file');
+
+            if (!$file || !$file->isValid()) {
+                throw new \Exception('Invalid file uploaded');
+            }
+
+            // Check file extension
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf', 'svg', 'zip', 'docx', 'xlsx', 'doc', 'xls', 'ppt', 'pptx'];
+            $fileExtension = strtolower($file->getClientOriginalExtension());
+
+            if (!in_array($fileExtension, $allowedExtensions)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File type not allowed: ' . $fileExtension
+                ], 400);
+            }
+
+            // Generate random filename
+            $randomName = uniqid() . '_' . time() . '.' . $fileExtension;
+
+            // Create upload directory
+            $uploadPath = 'uploads/rekom_files/' . $request->id_jenis_temuan;
+            $fullUploadPath = public_path($uploadPath);
+
+            if (!file_exists($fullUploadPath)) {
+                mkdir($fullUploadPath, 0777, true);
+            }
+
+            // Move file
+            $file->move($fullUploadPath, $randomName);
+
+            // Save to database
+            $dataDukungRekom = DB::table('datadukung_rekoms')->insert([
+                'id_jenis_temuan' => $request->id_jenis_temuan,
+                'nama_file' => $uploadPath . '/' . $randomName,
+                'original_name' => $file->getClientOriginalName(),
+                'file_size' => $file->getSize(),
+                'mime_type' => $file->getClientMimeType(),
+                'uploaded_by' => auth()->id(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+
+            Log::info('OpdTL rekomendasi file uploaded successfully', [
+                'user_id' => auth()->id(),
+                'jenis_temuan_id' => $request->id_jenis_temuan,
+                'file_name' => $randomName
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File uploaded successfully',
+                'stored_name' => $randomName,
+                'path' => $uploadPath . '/' . $randomName
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('OpdTL Rekomendasi File Upload Error:', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete uploaded file for rekomendasi
+     */
+    public function deleteFileRekomendasi(Request $request)
+    {
+        try {
+            $request->validate([
+                'file_id' => 'required|exists:datadukung_rekoms,id',
+            ]);
+
+            // Get file info and check access
+            $fileRecord = DB::table('datadukung_rekoms')->where('id', $request->file_id)->first();
+
+            if (!$fileRecord) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File tidak ditemukan'
+                ], 404);
+            }
+
+            // Check user access
+            $currentUser = auth()->user();
+            $userDataAccess = UserDataAccess::where('user_id', $currentUser->id)->first();
+
+            if (!$userDataAccess || !$userDataAccess->is_active || $userDataAccess->access_type !== 'specific') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses untuk menghapus file'
+                ], 403);
+            }
+
+            $allowedJenisTemuanIds = $userDataAccess->jenis_temuan_ids ?? [];
+            if (!in_array($fileRecord->id_jenis_temuan, $allowedJenisTemuanIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses untuk menghapus file ini'
+                ], 403);
+            }
+
+            // Delete physical file
+            $filePath = public_path($fileRecord->nama_file);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            // Delete from database
+            DB::table('datadukung_rekoms')->where('id', $request->file_id)->delete();
+
+            Log::info('OpdTL rekomendasi file deleted successfully', [
+                'user_id' => auth()->id(),
+                'file_id' => $request->file_id,
+                'jenis_temuan_id' => $fileRecord->id_jenis_temuan
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File berhasil dihapus'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('OpdTL Rekomendasi File Delete Error:', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Delete failed: ' . $e->getMessage()
             ], 500);
         }
     }

@@ -157,6 +157,12 @@ Route::group(['prefix' => 'opdTL', 'middleware' => ['auth']], function () {
     Route::get('/menu-a2', [App\Http\Controllers\OpdTL\OpdTLController::class, 'menuA2'])->name('opdTL.menuA2');
     Route::get('/menu-a2/{id}', [App\Http\Controllers\OpdTL\OpdTLController::class, 'menuA2Detail'])->name('opdTL.menuA2.detail');
 
-    // File upload (only allowed action)
+    // Menu A3 - List Rekomendasi dengan Upload Access
+    Route::get('/menu-a3', [App\Http\Controllers\OpdTL\OpdTLController::class, 'menuA3'])->name('opdTL.menuA3');
+    Route::get('/menu-a3/{id}', [App\Http\Controllers\OpdTL\OpdTLController::class, 'menuA3Detail'])->name('opdTL.menuA3.detail');
+
+    // File upload routes (only allowed action)
     Route::post('/upload-file', [App\Http\Controllers\OpdTL\OpdTLController::class, 'uploadFile'])->name('opdTL.uploadFile');
+    Route::post('/upload-file-rekomendasi', [App\Http\Controllers\OpdTL\OpdTLController::class, 'uploadFileRekomendasi'])->name('opdTL.uploadFileRekomendasi');
+    Route::delete('/delete-file-rekomendasi', [App\Http\Controllers\OpdTL\OpdTLController::class, 'deleteFileRekomendasi'])->name('opdTL.deleteFileRekomendasi');
 });
